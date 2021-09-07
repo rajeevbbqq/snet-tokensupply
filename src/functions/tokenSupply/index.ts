@@ -12,6 +12,7 @@ export default {
           parameters: {
             querystrings: {
               tokensymbol: false,
+              q: false
             },
           },
         },

@@ -3,7 +3,7 @@ import type { AWS } from "@serverless/typescript";
 import tokenSupply from "@functions/tokenSupply";
 
 const serverlessConfiguration: AWS = {
-  service: "erc20-utils-lambda",
+  service: "token-supply",
   frameworkVersion: "2",
   custom: {
     webpack: {
