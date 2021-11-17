@@ -1,3 +1,27 @@
+# SNET TOKEN SUPPLY
+This project is developed to expose API that read values from the blockchain and return them in the response.
+The values include
+- totalsupply - Total Supply of the given ERC20 token
+- circulatingsupply - Total supply excluding the balances of the foundation addresses
+
+API Endpoint: https://tokensupply.singularitynet.io/tokensupply
+
+## Different Tokens
+By default the API will return the values for the AGIX token. 
+Pass the `tokensymbol` in the query parameter to get the values for a different token specified in the configuration.
+
+e.g. to get the values of SDAO token. 
+https://tokensupply.singularitynet.io/tokensupply?tokensymbol=sdao
+
+## Specific value.
+By default the API returns json with bunch of values. But you can filter the value of interest using the query parameter `q`. 
+
+e.g. to get only the circulating supply of AGIX token.
+https://tokensupply.singularitynet.io/tokensupply?q=circulatingsupply
+
+## Adding new token
+To add a new token / remove one, please edit the configuration file `src/constants/config.ts`
+
 # Serverless - AWS Node.js Typescript
 
 This project has been generated using the `aws-nodejs-typescript` template from the [Serverless framework](https://www.serverless.com/).
