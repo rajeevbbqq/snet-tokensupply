@@ -1,6 +1,9 @@
 import "source-map-support/register";
 
-import { formatStringResponse, ValidatedEventAPIGatewayProxyEvent } from "@libs/apiGateway";
+import {
+  formatStringResponse,
+  ValidatedEventAPIGatewayProxyEvent,
+} from "@libs/apiGateway";
 import { formatBadRequestError, formatJSONResponse } from "@libs/apiGateway";
 
 import { middyfy } from "@libs/lambda";
@@ -25,7 +28,8 @@ const tokenSupply: ValidatedEventAPIGatewayProxyEvent<any> = async (event) => {
   try {
     console.log("tokenSymbol query", event.queryStringParameters?.tokensymbol);
 
-    const tokenSymbol = event?.queryStringParameters?.tokensymbol ?? config.defaultTokenSymbol;
+    const tokenSymbol =
+      event?.queryStringParameters?.tokensymbol ?? config.defaultTokenSymbol;
     console.log("tokenSymbol", tokenSymbol);
     const filter = <queryFilter | void>event?.queryStringParameters?.q;
     console.log("filter", filter);
@@ -39,9 +43,11 @@ const tokenSupply: ValidatedEventAPIGatewayProxyEvent<any> = async (event) => {
 
     //@ts-ignore
     const tokenContract = new web3.eth.Contract(ERC20ABI, token.address);
-    const [decimals, totalSupply] = await Promise.all([
+    const [decimals, totalSupply, tokenName, symbol] = await Promise.all([
       tokenContract.methods["decimals"]().call(),
       tokenContract.methods["totalSupply"]().call(),
+      tokenContract.methods["name"]().call(),
+      tokenContract.methods["symbol"]().call(),
     ]);
 
     const totalSupplyBN = toFraction(totalSupply.toString(), decimals);
@@ -51,17 +57,24 @@ const tokenSupply: ValidatedEventAPIGatewayProxyEvent<any> = async (event) => {
       let balanceToBeExcluded = 0;
 
       if (token.excludeBalancesOf.length !== 0) {
-        const excludeBalancePromises = token.excludeBalancesOf.map((account) => {
-          return tokenContract.methods["balanceOf"](account).call();
-        });
+        const excludeBalancePromises = token.excludeBalancesOf.map(
+          (account) => {
+            return tokenContract.methods["balanceOf"](account).call();
+          }
+        );
 
         let excludeBalances = await Promise.all(excludeBalancePromises);
         console.log("exclude Balances of", excludeBalances);
-        excludeBalances = excludeBalances.map((balance) => toFraction(balance, decimals));
+        excludeBalances = excludeBalances.map((balance) =>
+          toFraction(balance, decimals)
+        );
         console.log("excludeBalanceBN", excludeBalances.toString());
-        balanceToBeExcluded = excludeBalances.reduce((acc: BigNumber, cur: BigNumber) => {
-          return acc.plus(cur);
-        }, new BigNumber(0));
+        balanceToBeExcluded = excludeBalances.reduce(
+          (acc: BigNumber, cur: BigNumber) => {
+            return acc.plus(cur);
+          },
+          new BigNumber(0)
+        );
         console.log("balanceToBeExcluded", balanceToBeExcluded.toString());
       }
       return totalSupplyBN.minus(balanceToBeExcluded);
@@ -88,8 +101,8 @@ const tokenSupply: ValidatedEventAPIGatewayProxyEvent<any> = async (event) => {
     return formatJSONResponse({
       totalSupply: totalSupplyBN.precision(6),
       circulatingSupply: circulatingSupply.precision(6),
-      tokenSymbol: token.symbol,
-      tokenName: token.name,
+      tokenSymbol: symbol,
+      tokenName,
     });
   } catch (error) {
     console.log("Something went wrong error", error);

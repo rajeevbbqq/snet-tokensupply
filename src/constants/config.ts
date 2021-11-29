@@ -2,13 +2,11 @@ const config: Config = {
   infuraId: process.env.INFURA_ID,
   tokens: [
     {
-      name: "AGIX",
       symbol: "agix",
       address: "0x5B7533812759B45C2B44C19e320ba2cD2681b542",
       excludeBalancesOf: ["0x2ff22f87fdc01ecc235126b98ddc00f70dd2ae0b"],
     },
     {
-      name: "SDAO",
       symbol: "sdao",
       address: "0x993864e43caa7f7f12953ad6feb1d1ca635b875f",
       excludeBalancesOf: [
@@ -21,7 +19,6 @@ const config: Config = {
       ],
     },
     {
-      name: "NTX",
       symbol: "ntx",
       address: "0xf0d33beda4d734c72684b5f9abbebf715d0a7935",
       excludeBalancesOf: [
@@ -44,7 +41,6 @@ type Config = {
 };
 
 type Token = {
-  name: string;
   symbol: string;
   address: string;
   excludeBalancesOf: string[];
